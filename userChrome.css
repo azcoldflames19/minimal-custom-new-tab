@@ -1,0 +1,129 @@
+/* imports */
+@import url("ShyFox/shy-variables.css");
+@import url("ShyFox/shy-global.css");
+@import url("ShyFox/shy-sidebar.css");
+@import url("ShyFox/shy-toolbar.css");
+@import url("ShyFox/shy-navbar.css");
+@import url("ShyFox/shy-findbar.css");
+@import url("ShyFox/shy-controls.css");
+@import url("ShyFox/shy-compact.css");
+@import url("ShyFox/shy-icons.css");
+@import url("ShyFox/shy-floating-search.css");
+
+/* === CUSTOM FIXES FOR SEARCH RESULTS DROPDOWN === */
+
+/* Fix search results dropdown positioning in floating search mode */
+@media not (-moz-bool-pref: "shyfox.disable.floating.search") {
+  /* When urlbar is in floating/breakout mode */
+  #urlbar[breakout-extend] {
+    /* Override any z-index conflicts */
+    z-index: 999999 !important;
+    
+    /* Fix the urlbar view (search results) positioning */
+    .urlbarView {
+      position: fixed !important;
+      z-index: 1000000 !important;
+      
+      /* Position below the floating search bar using ShyFox variables */
+      top: calc(20vh + 70px) !important;
+      left: 18vw !important;
+      width: 64vw !important;
+      right: auto !important;
+      
+      /* Ensure proper display */
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      
+      /* Styling to match ShyFox theme */
+      border-radius: var(--bigger-rounding, 20px) !important;
+      background-color: var(--pp-col, var(--arrowpanel-background)) !important;
+      border: var(--outline, 1px solid var(--arrowpanel-background)) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24) !important;
+      margin: 0 !important;
+      padding: 8px 0 !important;
+      max-height: 60vh !important;
+      overflow-y: auto !important;
+    }
+    
+    /* Fix search result rows */
+    .urlbarView-row {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: flex !important;
+      margin: 0 8px !important;
+      border-radius: var(--rounding, 11.5px) !important;
+    }
+    
+    /* Fix search result text color */
+    .urlbarView-row * {
+      color: var(--bt-col, var(--toolbarbutton-icon-fill)) !important;
+    }
+    
+    /* Ensure the translucent background from floating search doesn't interfere */
+    &::before {
+      pointer-events: none !important;
+    }
+  }
+}
+
+/* Fix for when floating search is disabled - Force navbar state reset */
+@media (-moz-bool-pref: "shyfox.disable.floating.search") {
+  /* Force navbar to always be in correct position when focused */
+  #nav-bar:focus-within,
+  #nav-bar:has(#urlbar[focused="true"]),
+  #nav-bar:has(#urlbar[open="true"]) {
+    position: fixed !important;
+    top: var(--top-margin) !important;
+    left: var(--left-margin) !important;
+    right: var(--right-margin) !important;
+    width: auto !important;
+    transform: translateY(0) !important;
+    transition: var(--transition) !important;
+    z-index: 999997 !important;
+  }
+  
+  /* Force recalculation of urlbar position when focused */
+  #urlbar[focused="true"],
+  #urlbar[open="true"] {
+    position: relative !important;
+    z-index: 999998 !important;
+    /* Force browser to recalculate position */
+    transform: translateZ(0) !important;
+  }
+  
+  /* Ensure search results appear in correct position relative to visible navbar */
+  #urlbar:focus-within .urlbarView,
+  #urlbar[open] .urlbarView,
+  #urlbar[breakout-extend] .urlbarView {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 999999 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-top: 4px !important;
+    /* Force hardware acceleration for proper positioning */
+    transform: translateZ(0) !important;
+  }
+  
+  /* Prevent any breakout positioning interference */
+  #urlbar[breakout-extend] {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: translateZ(0) !important;
+    width: auto !important;
+  }
+  
+  /* Force navbar visibility when URL bar is focused */
+  #navigator-toolbox:has(#urlbar[focused="true"]),
+  #navigator-toolbox:has(#urlbar[open="true"]) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+}

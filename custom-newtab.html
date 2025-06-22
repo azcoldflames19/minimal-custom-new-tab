@@ -180,7 +180,7 @@
         <h1 class="greeting" id="greeting">Good morning</h1>
         
         <div class="search-container">
-            <input type="text" class="search-box" id="searchBox" placeholder="Just start typing to search..." autocomplete="off">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search the web or enter address..." autocomplete="off">
             <div class="search-suggestions" id="suggestions"></div>
         </div>
         
@@ -316,70 +316,13 @@
             }
         });
 
-        // Aggressive focus strategy to override Firefox's URL bar focus
-        function forceFocusSearchBox() {
-            try {
-                // Blur any currently focused element first
-                if (document.activeElement) {
-                    document.activeElement.blur();
-                }
-                
-                // Force focus on our search box
-                searchBox.focus();
-                searchBox.click();
-                
-                // Ensure cursor is visible
-                searchBox.setSelectionRange(0, 0);
-                
-                console.log('Search box focused successfully');
-            } catch (e) {
-                console.log('Focus attempt failed:', e);
-            }
-        }
-
-        // Multiple attempts to steal focus from Firefox URL bar
-        function initializeFocus() {
-            // Immediate attempt
-            forceFocusSearchBox();
-            
-            // Multiple delayed attempts to override Firefox's URL bar focus
-            setTimeout(forceFocusSearchBox, 50);
-            setTimeout(forceFocusSearchBox, 100);
-            setTimeout(forceFocusSearchBox, 200);
-            setTimeout(forceFocusSearchBox, 500);
-            setTimeout(forceFocusSearchBox, 1000);
-        }
-
-        // Listen for when Firefox tries to focus the URL bar and steal it back
-        document.addEventListener('focusout', function(e) {
-            if (e.target === searchBox) {
-                // If our search box loses focus, try to get it back
-                setTimeout(forceFocusSearchBox, 10);
-            }
-        });
-
-        // Also focus when user interacts with the page
-        document.addEventListener('click', forceFocusSearchBox);
-        document.addEventListener('keydown', function(e) {
-            // If user starts typing and search box isn't focused, focus it
-            if (document.activeElement !== searchBox && e.key.length === 1) {
-                forceFocusSearchBox();
-                // Re-trigger the keypress on the search box
-                setTimeout(() => {
-                    searchBox.value += e.key;
-                    searchBox.setSelectionRange(searchBox.value.length, searchBox.value.length);
-                }, 0);
-                e.preventDefault();
-            }
-        });
+        // Focus search box on page load
+        searchBox.focus();
 
         // Initialize
         updateTime();
         updateGreeting();
         setInterval(updateTime, 1000);
-        
-        // Start the aggressive focus strategy
-        initializeFocus();
     </script>
 </body>
 </html> 
