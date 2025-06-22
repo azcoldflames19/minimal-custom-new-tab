@@ -180,7 +180,7 @@
         <h1 class="greeting" id="greeting">Good morning</h1>
         
         <div class="search-container">
-            <input type="text" class="search-box" id="searchBox" placeholder="Search the web or enter address..." autocomplete="off">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search the web or enter address... (Click here to start)" autocomplete="off">
             <div class="search-suggestions" id="suggestions"></div>
         </div>
         
@@ -316,13 +316,36 @@
             }
         });
 
-        // Focus search box on page load
-        searchBox.focus();
+        // Focus search box on page load (with delay for extension compatibility)
+        function focusSearchBox() {
+            try {
+                searchBox.focus();
+            } catch (e) {
+                // Fallback for extension environments
+                setTimeout(() => {
+                    try {
+                        searchBox.focus();
+                    } catch (e) {
+                        console.log('Auto-focus disabled in extension environment');
+                    }
+                }, 100);
+            }
+        }
 
         // Initialize
         updateTime();
         updateGreeting();
         setInterval(updateTime, 1000);
+        
+        // Focus with delay to ensure page is fully loaded
+        setTimeout(focusSearchBox, 200);
+        
+        // Also focus when user clicks anywhere on the page
+        document.addEventListener('click', function(e) {
+            if (e.target === document.body || e.target.closest('.container')) {
+                focusSearchBox();
+            }
+        });
     </script>
 </body>
 </html> 
