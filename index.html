@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <style>
+        :root {
+            --bg-primary: #19171a;
+            --bg-secondary: #201e21;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8b8;
+            --accent: #3584E4;
+            --border-radius: 11.5px;
+            --big-radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .greeting {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: var(--big-radius);
+            color: var(--text-primary);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(53, 132, 228, 0.3);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(32, 30, 33, 0.95);
+            border-radius: var(--border-radius);
+            margin-top: 0.5rem;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .suggestion-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(53, 132, 228, 0.2);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .quick-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .quick-link:hover {
+            background: rgba(53, 132, 228, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .quick-link-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .quick-link-title {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .time {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .greeting {
+                font-size: 2rem;
+            }
+            
+            .quick-links {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="time" id="time"></div>
+    
+    <div class="container">
+        <h1 class="greeting" id="greeting">Good morning</h1>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search the web or enter address..." autocomplete="off">
+            <div class="search-suggestions" id="suggestions"></div>
+        </div>
+        
+        <div class="quick-links">
+            <a href="https://github.com" class="quick-link">
+                <div class="quick-link-icon">🐙</div>
+                <div class="quick-link-title">GitHub</div>
+            </a>
+            <a href="https://youtube.com" class="quick-link">
+                <div class="quick-link-icon">📺</div>
+                <div class="quick-link-title">YouTube</div>
+            </a>
+            <a href="https://mail.google.com" class="quick-link">
+                <div class="quick-link-icon">📧</div>
+                <div class="quick-link-title">Gmail</div>
+            </a>
+            <a href="https://docs.google.com" class="quick-link">
+                <div class="quick-link-icon">📄</div>
+                <div class="quick-link-title">Docs</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('time').textContent = timeString;
+        }
+
+        // Update greeting based on time
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('greeting');
+            
+            if (hour < 12) {
+                greetingEl.textContent = 'Good morning';
+            } else if (hour < 17) {
+                greetingEl.textContent = 'Good afternoon';
+            } else {
+                greetingEl.textContent = 'Good evening';
+            }
+        }
+
+        // Search functionality
+        const searchBox = document.getElementById('searchBox');
+        const suggestions = document.getElementById('suggestions');
+
+        // Popular search suggestions
+        const commonSearches = [
+            { text: 'GitHub', url: 'https://github.com', icon: '🐙' },
+            { text: 'YouTube', url: 'https://youtube.com', icon: '📺' },
+            { text: 'Gmail', url: 'https://mail.google.com', icon: '📧' },
+            { text: 'Google Drive', url: 'https://drive.google.com', icon: '💾' },
+            { text: 'Stack Overflow', url: 'https://stackoverflow.com', icon: '💬' },
+            { text: 'Reddit', url: 'https://reddit.com', icon: '🔴' },
+            { text: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
+            { text: 'Netflix', url: 'https://netflix.com', icon: '🎬' }
+        ];
+
+        searchBox.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query.length === 0) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            // Filter suggestions
+            const filtered = commonSearches.filter(item => 
+                item.text.toLowerCase().includes(query)
+            );
+
+            // Add search suggestion
+            const searchSuggestions = [
+                { text: `Search for "${query}"`, url: `https://www.google.com/search?q=${encodeURIComponent(query)}`, icon: '🔍' }
+            ];
+
+            const allSuggestions = [...searchSuggestions, ...filtered.slice(0, 5)];
+
+            if (allSuggestions.length > 0) {
+                suggestions.innerHTML = allSuggestions.map(item => `
+                    <div class="suggestion-item" data-url="${item.url}">
+                        <span class="suggestion-icon">${item.icon}</span>
+                        <span>${item.text}</span>
+                    </div>
+                `).join('');
+                suggestions.style.display = 'block';
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        // Handle search submission
+        function performSearch(query) {
+            if (!query.trim()) return;
+            
+            // Check if it's a URL
+            if (query.includes('.') && !query.includes(' ')) {
+                // Add protocol if missing
+                const url = query.startsWith('http') ? query : `https://${query}`;
+                window.location.href = url;
+            } else {
+                // Search query
+                window.location.href = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        searchBox.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch(this.value);
+            } else if (e.key === 'Escape') {
+                suggestions.style.display = 'none';
+                this.blur();
+            }
+        });
+
+        // Handle suggestion clicks
+        suggestions.addEventListener('click', function(e) {
+            const suggestionItem = e.target.closest('.suggestion-item');
+            if (suggestionItem) {
+                const url = suggestionItem.dataset.url;
+                window.location.href = url;
+            }
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        // Focus search box on page load
+        searchBox.focus();
+
+        // Initialize
+        updateTime();
+        updateGreeting();
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html> 
